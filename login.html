@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Iniciar Sesión - Sombreros del Putas</title>
+    <link rel="stylesheet" href="estilos.css">
+</head>
+<body>
+    <header>
+        <h1>Sombreros del Putas</h1>
+        <nav>
+            <a href="index.html">Inicio</a>
+            <a href="productos.html">Nuestros Modelos</a>
+            <a href="carrito.html">Carrito</a>
+            <a href="perfil.html">Mi Perfil</a>
+            <a href="registro.html">Regístrate</a>
+            <a href="login.html" class="activo">Iniciar Sesión</a>
+        </nav>
+    </header>
+
+    <section>
+        <h2>Inicia tu sesión</h2>
+        <form class="formulario" id="form-login">
+            <label>Nombre o Correo</label>
+            <input type="text" id="nombre-log" required>
+            <label>Contraseña</label>
+            <input type="password" id="pass-log" required>
+            <button type="submit">Entrar</button>
+            <p style="text-align:center;margin-top:1rem;">¿No tienes cuenta? <a href="registro.html" style="color:#4caf50;font-weight:bold;">Regístrate aquí</a></p>
+        </form>
+    </section>
+
+    <footer>
+        <div class="redes"><a href="#">Instagram</a> | <a href="#">Facebook</a></div>
+        <p>&copy; 2026 Sombreros del Putas | Aguadas, Caldas</p>
+    </footer>
+
+    <div class="whatsapp-flotante"><a href="https://wa.me/573XXXXXXXXX" target="_blank">💬</a></div>
+    <div class="subir-arriba"><button onclick="window.scrollTo({top:0,behavior:'smooth'})">⬆</button></div>
+
+    <script>
+        document.getElementById('form-login').addEventListener('submit',function(e){
+            e.preventDefault();
+            const nom = document.getElementById('nombre-log').value;
+            
+            // AHORA POR DEFECTO ES CLIENTE, SOLO ADMIN SI YA ESTABA GUARDADO
+            if(!localStorage.getItem('tipoUsuario')) {
+                localStorage.setItem('tipoUsuario','cliente');
+            }
+            
+            localStorage.setItem('usuarioActual', nom);
+            alert('✅ ¡Bienvenido ' + nom + '! Tu cuenta es de: ' + (localStorage.getItem('tipoUsuario')==='admin'?'ADMINISTRADOR':'CLIENTE'));
+            window.location.href='index.html';
+        });
+    </script>
+</body>
+</html>

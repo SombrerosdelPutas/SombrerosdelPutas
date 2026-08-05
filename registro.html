@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Regístrate - Sombreros del Putas</title>
+    <link rel="stylesheet" href="estilos.css">
+</head>
+<body>
+    <header>
+        <h1>Sombreros del Putas</h1>
+        <nav>
+            <a href="index.html">Inicio</a>
+            <a href="productos.html">Nuestros Modelos</a>
+            <a href="carrito.html">Carrito</a>
+            <a href="registro.html" class="activo">Regístrate</a>
+            <a href="perfil.html">Mi Perfil</a>
+        </nav>
+    </header>
+
+    <section>
+        <h2>Crea tu cuenta</h2>
+        <form class="formulario" id="form-registro">
+            <label>Nombre completo</label>
+            <input type="text" id="nombre-reg" required>
+            <label>Correo electrónico</label>
+            <input type="email" id="correo-reg" required>
+            <label>WhatsApp</label>
+            <input type="tel" id="tel-reg" required>
+            <label>Contraseña</label>
+            <input type="password" id="pass-reg" required>
+
+            <label>Tipo de cuenta</label>
+            <select id="tipo-cuenta" required>
+                <option value="cliente">Cliente</option>
+                <option value="admin">Administrador</option>
+            </select>
+
+            <!-- AQUÍ APARECE EL CÓDIGO SECRETO -->
+            <div id="caja-codigo-reg" class="oculto" style="margin-top:1rem;">
+                <label>🔐 Código de Administrador</label>
+                <input type="password" id="codigo-admin-reg" placeholder="Escribe el código secreto">
+                <p style="font-size:0.85rem;color:#666;">Solo las personas autorizadas conocen este código</p>
+            </div>
+
+            <button type="submit">Registrarme</button>
+            <p style="text-align:center;margin-top:1rem;">¿Ya tienes cuenta? <a href="login.html" style="color:#ff7a21;font-weight:bold;">Inicia sesión</a></p>
+        </form>
+    </section>
+
+    <footer>
+        <div class="redes"><a href="#">Instagram</a> | <a href="#">Facebook</a></div>
+        <p>&copy; 2026 Sombreros del Putas | Aguadas, Caldas</p>
+    </footer>
+
+    <div class="whatsapp-flotante"><a href="https://wa.me/573XXXXXXXXX" target="_blank">💬</a></div>
+    <div class="subir-arriba"><button onclick="window.scrollTo({top:0,behavior:'smooth'})">⬆</button></div>
+
+    <script>
+        // ====== EL MISMO CÓDIGO QUE PUSISTE EN PRODUCTOS.HTML ======
+        const CODIGO_SECRETO = "aguadas2026";
+        // ===========================================================
+
+        const selectTipo = document.getElementById('tipo-cuenta');
+        const cajaCod = document.getElementById('caja-codigo-reg');
+
+        // Muestra u oculta el código según lo que elijas
+        selectTipo.addEventListener('change', () => {
+            if(selectTipo.value === 'admin'){
+                cajaCod.classList.remove('oculto');
+            }else{
+                cajaCod.classList.add('oculto');
+            }
+        });
+
+        document.getElementById('form-registro').addEventListener('submit',function(e){
+            e.preventDefault();
+
+            const tipo = document.getElementById('tipo-cuenta').value;
+            const codigoIngresado = document.getElementById('codigo-admin-reg').value;
+
+            // Si es administrador, valida el código
+            if(tipo === 'admin'){
+                if(codigoIngresado !== CODIGO_SECRETO){
+                    alert('❌ Código de administrador incorrecto. No puedes registrarte como administrador.');
+                    return;
+                }
+            }
+
+            const datos = {
+                nombre: document.getElementById('nombre-reg').value,
+                correo: document.getElementById('correo-reg').value,
+                telefono: document.getElementById('tel-reg').value,
+                clave: document.getElementById('pass-reg').value,
+                tipo: tipo
+            };
+
+            localStorage.setItem('usuarioActual', datos.nombre);
+            localStorage.setItem('tipoUsuario', datos.tipo);
+            localStorage.setItem('datosUsuario', JSON.stringify(datos));
+            localStorage.removeItem('verificadoAdmin');
+
+            alert('✅ ¡Cuenta creada como ' + (datos.tipo === 'admin' ? 'ADMINISTRADOR' : 'CLIENTE') + '! Bienvenido ' + datos.nombre);
+            window.location.href='index.html';
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nuestros Modelos - Sombreros del Putas</title>
+    <link rel="stylesheet" href="estilos.css">
+</head>
+<body>
+    <header>
+        <h1>Sombreros del Putas</h1>
+        <nav>
+            <a href="index.html">Inicio</a>
+            <a href="productos.html" class="activo">Nuestros Modelos</a>
+            <a href="carrito.html">Carrito</a>
+            <span id="area-usuario">
+                <a href="registro.html">Regístrate</a>
+                <a href="login.html">Iniciar Sesión</a>
+                <a href="perfil.html">Mi Perfil</a>
+            </span>
+        </nav>
+    </header>
+
+    <section>
+        <h2>Todos nuestros sombreros</h2>
+
+        <div class="codigo-admin oculto" id="pedir-codigo">
+            <h4>🔐 Código de Administrador</h4>
+            <input type="password" id="codigo-secreto" placeholder="Escribe aquí">
+            <br>
+            <button class="btn-verificar" onclick="verificarCodigo()">Entrar al Panel</button>
+        </div>
+
+        <div class="panel-admin oculto" id="panel-admin">
+            <h3>⚙️ Panel de Administrador</h3>
+            <div class="form-admin">
+                <input type="text" id="prod-nombre" placeholder="Nombre del sombrero">
+                <input type="number" id="prod-precio" placeholder="Precio en pesos">
+                <input type="text" id="prod-img" placeholder="Nombre de la imagen.jpg">
+                <textarea id="prod-desc" placeholder="Descripción corta"></textarea>
+                <button onclick="agregarProducto()">✅ Agregar Nuevo Producto</button>
+            </div>
+            <h4>Lista de productos:</h4>
+            <div class="lista-productos-admin" id="lista-admin"></div>
+        </div>
+
+        <div class="productos-grid" id="grid-productos"></div>
+        <div class="ver-todos"><a href="carrito.html" class="boton">Ver mi carrito</a></div>
+    </section>
+
+    <footer>
+        <div class="redes"><a href="#">Instagram</a> | <a href="#">Facebook</a></div>
+        <p>&copy; 2026 Sombreros del Putas | Aguadas, Caldas</p>
+    </footer>
+
+    <div class="whatsapp-flotante"><a href="https://wa.me/573XXXXXXXXX" target="_blank">💬</a></div>
+    <div class="subir-arriba"><button onclick="window.scrollTo({top:0,behavior:'smooth'})">⬆</button></div>
+
+    <script>
+        // ====== PON TU CÓDIGO SECRETO AQUÍ ======
+        const CODIGO_ADMIN = "aguadas2026";
+        // ========================================
+
+        let productos = JSON.parse(localStorage.getItem('listaProductos')) || [
+            {nombre:'Modelo Tradicional', precio:45000, img:'imagenes/sombrero1.jpg', desc:'El clásico de siempre'},
+            {nombre:'Modelo Elegante', precio:65000, img:'imagenes/sombrero2.jpg', desc:'Acabados finos'},
+            {nombre:'Modelo Exclusivo', precio:85000, img:'imagenes/sombrero3.jpg', desc:'Diseños únicos'}
+        ];
+        let carrito = JSON.parse(localStorage.getItem('carrito')) || [];
+
+        function mostrarProductos(){
+            const grid = document.getElementById('grid-productos');
+            const ladmin = document.getElementById('lista-admin');
+            grid.innerHTML = ladmin.innerHTML = '';
+            productos.forEach((p,i)=>{
+                grid.innerHTML += `
+                <div class="producto">
+                    <img src="${p.img}" alt="${p.nombre}">
+                    <h3>${p.nombre}</h3>
+                    <p>${p.desc}</p>
+                    <p class="precio">$ ${p.precio.toLocaleString('es-CO')}</p>
+                    <button class="btn-agregar" onclick="agregarAlCarrito('${p.nombre}',${p.precio})">Agregar</button>
+                </div>`;
+                ladmin.innerHTML += `
+                <div class="producto-admin">
+                    <strong>${p.nombre}</strong><br>Precio: $${p.precio.toLocaleString('es-CO')}
+                    <br><button class="btn-eliminar" onclick="borrarProducto(${i})">Eliminar</button>
+                </div>`;
+            });
+            localStorage.setItem('listaProductos',JSON.stringify(productos));
+        }
+
+        function agregarProducto(){
+            const nom = document.getElementById('prod-nombre').value;
+            const pre = parseInt(document.getElementById('prod-precio').value);
+            const img = document.getElementById('prod-img').value;
+            const des = document.getElementById('prod-desc').value;
+            if(!nom || !pre || !img) {alert('Faltan datos');return;}
+            productos.push({nombre:nom, precio:pre, img:img, desc:des});
+            mostrarProductos();
+            alert('✅ Producto agregado');
+            document.getElementById('prod-nombre').value='';
+            document.getElementById('prod-precio').value='';
+            document.getElementById('prod-img').value='';
+            document.getElementById('prod-desc').value='';
+        }
+
+        function borrarProducto(i){
+            if(confirm('¿Borrar este producto?')){
+                productos.splice(i,1);
+                mostrarProductos();
+            }
+        }
+
+        function agregarAlCarrito(nombre,precio){
+            carrito.push({nombre,precio});
+            localStorage.setItem('carrito',JSON.stringify(carrito));
+            alert('✅ '+nombre+' al carrito');
+        }
+
+        function verificarSesion(){
+            const u = localStorage.getItem('usuarioActual');
+            const t = localStorage.getItem('tipoUsuario');
+            const a = document.getElementById('area-usuario');
+            const cajaCod = document.getElementById('pedir-codigo');
+            const panel = document.getElementById('panel-admin');
+
+            if(u){
+                a.innerHTML = `<span class="usuario-conectado">👋 ${u} (${t==='admin'?'ADMIN':'CLIENTE'})</span> <a href="#" class="btn-cerrar" onclick="cerrarSesion()">Salir</a>`;
+                if(t==='admin'){
+                    cajaCod.classList.remove('oculto');
+                    if(localStorage.getItem('verificadoAdmin')==='si') panel.classList.remove('oculto');
+                }
+            }
+        }
+
+        function verificarCodigo(){
+            const ingreso = document.getElementById('codigo-secreto').value;
+            if(ingreso === CODIGO_ADMIN){
+                document.getElementById('pedir-codigo').classList.add('oculto');
+                document.getElementById('panel-admin').classList.remove('oculto');
+                localStorage.setItem('verificadoAdmin','si');
+                alert('✅ Código correcto. Ya puedes administrar.');
+            }else{
+                alert('❌ Código incorrecto. Intenta de nuevo.');
+                document.getElementById('codigo-secreto').value='';
+            }
+        }
+
+        function cerrarSesion(){
+            localStorage.clear();
+            window.location.href='index.html';
+        }
+
+        mostrarProductos();
+        verificarSesion();
+    </script>
+</body>
+</html>

@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Carrito - Sombreros del Putas</title>
+    <link rel="stylesheet" href="estilos.css">
+</head>
+<body>
+    <header>
+        <h1>Sombreros del Putas</h1>
+        <nav>
+            <a href="index.html">Inicio</a>
+            <a href="productos.html">Nuestros Modelos</a>
+            <a href="carrito.html" class="activo">Carrito</a>
+            <span id="area-usuario">
+                <a href="registro.html">Regístrate</a>
+                <a href="login.html">Iniciar Sesión</a>
+                <a href="perfil.html">Mi Perfil</a>
+            </span>
+        </nav>
+    </header>
+
+    <section>
+        <h2>Tu Carrito</h2>
+        <div id="lista-carrito"></div>
+        <div class="carrito-total" id="total"></div>
+        <div class="ver-todos" style="margin-top:1.5rem;">
+            <button class="boton" onclick="enviarPedido()">📤 Enviar pedido por WhatsApp</button>
+            <br><br>
+            <a href="productos.html" class="boton" style="background:#1a1a1a;color:#ff7a21;">Seguir comprando</a>
+        </div>
+    </section>
+
+    <footer>
+        <div class="redes"><a href="#">Instagram</a> | <a href="#">Facebook</a></div>
+        <p>&copy; 2026 Sombreros del Putas | Aguadas, Caldas</p>
+    </footer>
+
+    <div class="whatsapp-flotante"><a href="https://wa.me/573XXXXXXXXX" target="_blank">💬</a></div>
+    <div class="subir-arriba"><button onclick="window.scrollTo({top:0,behavior:'smooth'})">⬆</button></div>
+
+    <script>
+        let carrito = JSON.parse(localStorage.getItem('carrito')) || [];
+        const lista = document.getElementById('lista-carrito');
+        const totalElem = document.getElementById('total');
+
+        function mostrarCarrito() {
+            lista.innerHTML = '';
+            if(carrito.length === 0){
+                lista.innerHTML = `<div class="carrito-vacio">🛒 Tu carrito está vacío</div>`;
+                totalElem.innerHTML = '';
+                return;
+            }
+            let total = 0;
+            carrito.forEach((item, indice)=>{
+                total += item.precio;
+                lista.innerHTML += `<div class="carrito-item"><div><strong>${item.nombre}</strong><br>$ ${item.precio.toLocaleString('es-CO')}</div><button class="btn-quitar" onclick="quitar(${indice})">Quitar</button></div>`;
+            });
+            totalElem.innerHTML = `Total: $ ${total.toLocaleString('es-CO')} COP`;
+        }
+        function quitar(i){ carrito.splice(i,1); localStorage.setItem('carrito',JSON.stringify(carrito)); mostrarCarrito(); }
+        function enviarPedido(){
+            if(carrito.length===0){alert('Agrega productos primero');return;}
+            let texto = 'Hola! Quiero pedir:\n';
+            let total=0;
+            carrito.forEach(i=>{texto += `- ${i.nombre}: $${i.precio.toLocaleString('es-CO')}\n`; total+=i.precio;});
+            texto += `\nTotal: $${total.toLocaleString('es-CO')} COP`;
+            window.open(`https://wa.me/573XXXXXXXXX?text=${encodeURIComponent(texto)}`);
+        }
+        function verificarSesion(){
+            const u = localStorage.getItem('usuarioActual');
+            const t = localStorage.getItem('tipoUsuario');
+            const a = document.getElementById('area-usuario');
+            if(u){
+                a.innerHTML = `<span class="usuario-conectado">👋 ${u} (${t==='admin'?'ADMIN':'CLIENTE'})</span> <a href="#" class="btn-cerrar" onclick="localStorage.clear();location.reload()">Salir</a>`;
+            }
+        }
+        mostrarCarrito();
+        verificarSesion();
+    </script>
+</body>
+</html>

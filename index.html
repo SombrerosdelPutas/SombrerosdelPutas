@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sombreros del Putas - Hechos a Mano en Aguadas</title>
+    <link rel="stylesheet" href="estilos.css">
+</head>
+<body>
+    <header>
+        <h1>Sombreros del Putas</h1>
+        <nav>
+            <a href="index.html" class="activo">Inicio</a>
+            <a href="productos.html">Nuestros Modelos</a>
+            <a href="carrito.html">Carrito</a>
+            <span id="area-usuario">
+                <a href="registro.html">Regístrate</a>
+                <a href="login.html">Iniciar Sesión</a>
+                <a href="perfil.html">Mi Perfil</a>
+            </span>
+        </nav>
+    </header>
+
+    <div class="carrusel">
+        <img src="imagenes/carrusel1.jpg" alt="Sombreros artesanales" class="carrusel-imagen activa">
+        <img src="imagenes/carrusel2.jpg" alt="Elaboración manual" class="carrusel-imagen">
+        <img src="imagenes/carrusel3.jpg" alt="Tradición de Aguadas" class="carrusel-imagen">
+        <div class="carrusel-texto">
+            <h1>Sombreros del Putas</h1>
+            <p>Tradición, arte y dedicación de Aguadas, Caldas en cada pieza</p>
+        </div>
+        <button class="carrusel-btn btn-izq" onclick="moverCarrusel(-1)">&#10094;</button>
+        <button class="carrusel-btn btn-der" onclick="moverCarrusel(1)">&#10095;</button>
+    </div>
+
+    <section class="por-que">
+        <h2>¿Por qué elegirnos?</h2>
+        <div class="por-que-grid">
+            <div class="punto"><h3>🖐️ Hechos a mano</h3><p>Cada pieza es única</p></div>
+            <div class="punto"><h3>🌿 Materiales nobles</h3><p>Fibras naturales</p></div>
+            <div class="punto"><h3>📍 De Aguadas</h3><p>Tradición caldense</p></div>
+            <div class="punto"><h3>🚚 Envíos nacionales</h3><p>A todo Colombia</p></div>
+        </div>
+    </section>
+
+    <section id="muestra">
+        <h2>Algunos de nuestros modelos</h2>
+        <div class="productos-grid" id="muestra-prod"></div>
+        <div class="ver-todos"><a href="productos.html" class="boton">Ver todos los modelos</a></div>
+    </section>
+
+    <section id="nosotros">
+        <h2>Nuestra Historia</h2>
+        <p>Somos <strong>Sombreros del Putas</strong>, emprendimiento nacido en Aguadas, Caldas. Conservamos técnicas ancestrales para llevar nuestra tradición a cada persona.</p>
+    </section>
+
+    <section id="contacto">
+        <h2>Contáctanos</h2>
+        <div class="contacto-info">
+            <p>📍 Aguadas, Caldas - Colombia</p>
+            <p>📱 WhatsApp: 3XX XXX XXXX</p>
+            <p>📧 consultas@sombrerosdelputas.com</p>
+        </div>
+    </section>
+
+    <footer>
+        <div class="redes"><a href="#">Instagram</a> | <a href="#">Facebook</a></div>
+        <p>&copy; 2026 Sombreros del Putas | Aguadas, Caldas</p>
+    </footer>
+
+    <div class="whatsapp-flotante"><a href="https://wa.me/573XXXXXXXXX" target="_blank">💬</a></div>
+    <div class="subir-arriba"><button onclick="window.scrollTo({top:0,behavior:'smooth'})">⬆</button></div>
+
+    <script>
+        let indice = 0;
+        const imagenes = document.querySelectorAll('.carrusel-imagen');
+        function mostrarCarrusel() {
+            imagenes.forEach(i=>i.classList.remove('activa'));
+            indice=(indice+1)%imagenes.length;
+            imagenes[indice].classList.add('activa');
+        }
+        function moverCarrusel(p) {
+            imagenes.forEach(i=>i.classList.remove('activa'));
+            indice=(indice+p+imagenes.length)%imagenes.length;
+            imagenes[indice].classList.add('activa');
+        }
+        setInterval(mostrarCarrusel,5000);
+
+        let productos = JSON.parse(localStorage.getItem('listaProductos')) || [
+            {nombre:'Modelo Tradicional', precio:45000, img:'imagenes/sombrero1.jpg', desc:'El clásico de siempre'},
+            {nombre:'Modelo Elegante', precio:65000, img:'imagenes/sombrero2.jpg', desc:'Acabados finos'},
+            {nombre:'Modelo Exclusivo', precio:85000, img:'imagenes/sombrero3.jpg', desc:'Diseños únicos'}
+        ];
+        let carrito = JSON.parse(localStorage.getItem('carrito')) || [];
+
+        function mostrarMuestra(){
+            const m = document.getElementById('muestra-prod');
+            m.innerHTML = '';
+            productos.slice(0,3).forEach(p=>{
+                m.innerHTML += `
+                <div class="producto">
+                    <img src="${p.img}" alt="${p.nombre}">
+                    <h3>${p.nombre}</h3>
+                    <p>${p.desc}</p>
+                    <p class="precio">$ ${p.precio.toLocaleString('es-CO')}</p>
+                    <button class="btn-agregar" onclick="agregarAlCarrito('${p.nombre}',${p.precio})">Agregar</button>
+                </div>`;
+            });
+        }
+        function agregarAlCarrito(nombre,precio){
+            carrito.push({nombre,precio});
+            localStorage.setItem('carrito',JSON.stringify(carrito));
+            alert('✅ '+nombre+' agregado');
+        }
+        function verificarSesion(){
+            const u = localStorage.getItem('usuarioActual');
+            const t = localStorage.getItem('tipoUsuario');
+            const a = document.getElementById('area-usuario');
+            if(u){
+                a.innerHTML = `<span class="usuario-conectado">👋 Hola, ${u} (${t==='admin'?'ADMIN':'CLIENTE'})</span><a href="#" class="btn-cerrar" onclick="cerrar()">Salir</a>`;
+            }
+        }
+        function cerrar(){
+            localStorage.clear();
+            location.reload();
+        }
+        mostrarMuestra();
+        verificarSesion();
+    </script>
+</body>
+</html>

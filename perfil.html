@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mi Perfil - Sombreros del Putas</title>
+    <link rel="stylesheet" href="estilos.css">
+</head>
+<body>
+    <header>
+        <h1>Sombreros del Putas</h1>
+        <nav>
+            <a href="index.html">Inicio</a>
+            <a href="productos.html">Nuestros Modelos</a>
+            <a href="carrito.html">Carrito</a>
+            <a href="perfil.html" class="activo">Mi Perfil</a>
+            <span id="area-usuario">
+                <a href="registro.html">Regístrate</a>
+                <a href="login.html">Iniciar Sesión</a>
+            </span>
+        </nav>
+    </header>
+
+    <section>
+        <h2>Mi Perfil</h2>
+
+        <div id="contenido-perfil" class="oculto">
+            <div class="perfil-caja">
+                <!-- Foto de perfil -->
+                <img id="foto-perfil" class="foto-perfil" src="" alt="Foto de perfil">
+                <label class="btn-foto">
+                    📷 Cambiar foto
+                    <input type="file" id="subir-foto" accept="image/*" style="display:none;">
+                </label>
+
+                <!-- Datos del usuario -->
+                <div class="perfil-datos" id="datos-usuario"></div>
+
+                <!-- Botón para editar -->
+                <button class="btn-editar-datos" onclick="mostrarEditar()">✏️ Editar mis datos</button>
+
+                <!-- Formulario de edición -->
+                <div class="form-editar" id="form-editar">
+                    <input type="text" id="editar-nombre" placeholder="Nombre completo">
+                    <input type="email" id="editar-correo" placeholder="Correo electrónico">
+                    <input type="tel" id="editar-telefono" placeholder="WhatsApp">
+                    <button class="btn-guardar" onclick="guardarCambios()">✅ Guardar</button>
+                    <button class="btn-cancelar" onclick="cancelarEditar()">❌ Cancelar</button>
+                </div>
+            </div>
+
+            <!-- Mis Favoritos -->
+            <h3 class="favoritos-titulo">❤️ Mis Productos Favoritos</h3>
+            <div class="productos-grid" id="grid-favoritos"></div>
+        </div>
+
+        <div id="sin-sesion" style="text-align:center;padding:4rem;">
+            <p style="font-size:1.2rem;color:var(--gris-medio);">⚠️ Debes iniciar sesión para ver tu perfil</p>
+            <br>
+            <a href="login.html" class="boton">Iniciar Sesión</a>
+        </div>
+    </section>
+
+    <footer>
+        <div class="redes"><a href="#">Instagram</a> | <a href="#">Facebook</a></div>
+        <p>&copy; 2026 Sombreros del Putas | Aguadas, Caldas</p>
+    </footer>
+
+    <div class="whatsapp-flotante"><a href="https://wa.me/573XXXXXXXXX" target="_blank">💬</a></div>
+    <div class="subir-arriba"><button onclick="window.scrollTo({top:0,behavior:'smooth'})">⬆</button></div>
+
+    <script>
+        const usuario = localStorage.getItem('usuarioActual');
+        const tipo = localStorage.getItem('tipoUsuario');
+        const datos = JSON.parse(localStorage.getItem('datosUsuario')) || {};
+        const favoritos = JSON.parse(localStorage.getItem('listaFavoritos')) || [];
+        const fotoGuardada = localStorage.getItem('fotoPerfil');
+        const contenido = document.getElementById('contenido-perfil');
+        const sinSesion = document.getElementById('sin-sesion');
+        const datosDiv = document.getElementById('datos-usuario');
+        const favDiv = document.getElementById('grid-favoritos');
+        const areaNav = document.getElementById('area-usuario');
+        const fotoPerfil = document.getElementById('foto-perfil');
+        const subirFoto = document.getElementById('subir-foto');
+
+        if(!usuario){
+            sinSesion.classList.remove('oculto');
+        }else{
+            contenido.classList.remove('oculto');
+            areaNav.innerHTML = `<span class="usuario-conectado">👋 ${usuario} (${tipo==='admin'?'ADMIN':'CLIENTE'})</span> <a href="#" class="btn-cerrar" onclick="cerrar()">Salir</a>`;
+
+            // Cargar foto
+            if(fotoGuardada) fotoPerfil.src = fotoGuardada;
+            else fotoPerfil.src = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTQwIiBoZWlnaHQ9IjE0MCIgdmlld0JveD0iMCAwIDE0MCAxNDAiPjxjaXJjbGUgY3g9IjcwIiBjeT0iNzAiIHI9IjcwIiBmaWxsPSIjRTVFN0VCIz48L2NpcmNsZT48Y2lyY2xlIGN4PSI3MCIgY3k9IjUwIiByPSIyNSIgZmlsbD0iIzlCNDJBMiIvPjxjaXJjbGUgY3g9IjcwIiBjeT0iMTA1IiByPSI0MCIgZmlsbD0iIzlCNDJBMiIvPjwvc3ZnPg==';
+
+            // Mostrar datos
+            datosDiv.innerHTML = `
+                <p><strong>Nombre:</strong> ${datos.nombre || 'No definido'}</p>
+                <p><strong>Correo:</strong> ${datos.correo || 'No definido'}</p>
+                <p><strong>WhatsApp:</strong> ${datos.telefono || 'No definido'}</p>
+                <p><strong>Tipo de cuenta:</strong> ${tipo==='admin'?'Administrador':'Cliente'}</p>
+            `;
+
+            // Mostrar favoritos
+            if(favoritos.length === 0){
+                favDiv.innerHTML = `<div class="sin-favoritos">Todavía no has guardado ningún favorito ❤️</div>`;
+            }else{
+                favoritos.forEach(p=>{
+                    favDiv.innerHTML += `
+                    <div class="producto">
+                        <img src="${p.img}" alt="${p.nombre}">
+                        <h3>${p.nombre}</h3>
+                        <p>${p.desc}</p>
+                        <p class="precio">$ ${p.precio.toLocaleString('es-CO')}</p>
+                        <button class="btn-agregar" onclick="agregarAlCarrito('${p.nombre}',${p.precio})">Agregar al carrito</button>
+                        <br>
+                        <button class="btn-quitar" style="margin-top:0.5rem;" onclick="quitarFavorito('${p.nombre}')">Quitar de favoritos</button>
+                    </div>`;
+                });
+            }
+        }
+
+        // Cambiar foto
+        subirFoto.addEventListener('change', function(e){
+            const lector = new FileReader();
+            lector.onload = function(evt){
+                fotoPerfil.src = evt.target.result;
+                localStorage.setItem('fotoPerfil', evt.target.result);
+            };
+            lector.readAsDataURL(e.target.files[0]);
+        });
+
+        // Editar datos
+        function mostrarEditar(){
+            document.getElementById('form-editar').classList.add('activo');
+            document.getElementById('editar-nombre').value = datos.nombre || '';
+            document.getElementById('editar-correo').value = datos.correo || '';
+            document.getElementById('editar-telefono').value = datos.telefono || '';
+        }
+        function cancelarEditar(){
+            document.getElementById('form-editar').classList.remove('activo');
+        }
+        function guardarCambios(){
+            datos.nombre = document.getElementById('editar-nombre').value;
+            datos.correo = document.getElementById('editar-correo').value;
+            datos.telefono = document.getElementById('editar-telefono').value;
+            localStorage.setItem('datosUsuario', JSON.stringify(datos));
+            localStorage.setItem('usuarioActual', datos.nombre);
+            alert('✅ Datos actualizados correctamente');
+            location.reload();
+        }
+
+        function agregarAlCarrito(nombre,precio){
+            let carrito = JSON.parse(localStorage.getItem('carrito')) || [];
+            carrito.push({nombre,precio});
+            localStorage.setItem('carrito',JSON.stringify(carrito));
+            alert('✅ '+nombre+' agregado');
+        }
+        function quitarFavorito(nombre){
+            let lista = JSON.parse(localStorage.getItem('listaFavoritos')) || [];
+            lista = lista.filter(f => f.nombre !== nombre);
+            localStorage.setItem('listaFavoritos', JSON.stringify(lista));
+            location.reload();
+        }
+        function cerrar(){
+            localStorage.clear();
+            location.href='index.html';
+        }
+    </script>
+</body>
+</html>
